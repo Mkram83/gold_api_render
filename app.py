@@ -1,4 +1,5 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
+import random
 
 app = Flask(__name__)
 
@@ -14,6 +15,25 @@ def get_quotes():
         {"symbol": "NZDUSD", "bid": 0.6045, "ask": 0.6048},
     ]
     return jsonify({"success": True, "quotes": quotes})
+
+@app.route('/predict', methods=['POST'])
+def predict_signal():
+    data = request.get_json()
+    symbol = data.get("symbol", "XAUUSD")
+    timeframe = data.get("timeframe", "1m")
+
+    prediction = random.choice(["Buy", "Sell", "Hold"])
+    stop_loss = round(random.uniform(0.1, 0.5), 2)
+    take_profit = round(random.uniform(0.5, 1.5), 2)
+
+    return jsonify({
+        "success": True,
+        "symbol": symbol,
+        "timeframe": timeframe,
+        "prediction": prediction,
+        "stop_loss": stop_loss,
+        "take_profit": take_profit
+    })
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000)
